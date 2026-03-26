@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T4H Widget Dock</title>
+<style>
+  body { width: 320px; min-height: 200px; margin: 0; background: #0f172a; color: #e2e8f0; font-family: system-ui, sans-serif; }
+  .header { padding: 16px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; gap: 10px; }
+  .logo { font-size: 20px; }
+  .title { font-size: 14px; font-weight: 600; }
+  .sub { font-size: 11px; color: #64748b; }
+  .btn { display: block; width: calc(100% - 32px); margin: 12px 16px; padding: 10px 16px; background: #6d28d9; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; text-align: center; }
+  .btn:hover { background: #7c3aed; }
+  .btn-outline { background: transparent; border: 1px solid #334155; color: #94a3b8; }
+  .btn-outline:hover { border-color: #6d28d9; color: #e2e8f0; }
+  .status { padding: 8px 16px; font-size: 11px; color: #64748b; text-align: center; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">🧩</div>
+  <div>
+    <div class="title">T4H Widget Dock</div>
+    <div class="sub">AI Business Visibility Tools</div>
+  </div>
+</div>
+<button class="btn" id="open-panel">Open Side Panel</button>
+<button class="btn btn-outline" id="open-options">Settings</button>
+<div class="status" id="status">Loading widgets…</div>
+<script src="popup.js"></script>
+</body>
+</html>
