@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "T4H Widget Dock",
+  "version": "0.1.0",
+  "description": "Load purchased Tech 4 Humanity widgets in a browser side panel. Pipeline health, finance, ops, and AI tools in 10 seconds.",
+  "permissions": [
+    "storage",
+    "sidePanel",
+    "activeTab",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://*.vercel.app/*",
+    "https://*.supabase.co/*",
+    "https://*.tech4humanity.com.au/*",
+    "https://*.holo-org.com/*",
+    "https://*.augmentedhumanity.coach/*"
+  ],
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "T4H Widget Dock",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
