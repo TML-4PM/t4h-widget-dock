@@ -2,28 +2,34 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>T4H Widget Dock — Settings</title>
+<title>Snaps by T4H — Settings</title>
 <style>
-  body { max-width: 480px; margin: 40px auto; background: #0f172a; color: #e2e8f0; font-family: system-ui, sans-serif; padding: 24px; }
-  h1 { font-size: 20px; margin-bottom: 4px; }
-  .sub { color: #64748b; font-size: 13px; margin-bottom: 32px; }
-  label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; margin-top: 20px; }
-  input { width: 100%; padding: 10px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #e2e8f0; font-size: 13px; font-family: monospace; }
-  input:focus { outline: none; border-color: #6d28d9; }
-  .save-btn { margin-top: 24px; background: #6d28d9; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; }
-  .save-btn:hover { background: #7c3aed; }
-  .status { margin-top: 12px; font-size: 12px; color: #22c55e; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+         background: #0f172a; color: #e2e8f0; max-width: 480px; margin: 40px auto; padding: 0 20px; }
+  h2 { font-size: 16px; font-weight: 700; color: #38bdf8; margin-bottom: 24px; }
+  label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
+  input { width: 100%; background: #1e293b; border: 1px solid #334155; color: #e2e8f0;
+          border-radius: 6px; padding: 9px 12px; font-size: 13px; outline: none; margin-bottom: 16px; }
+  input:focus { border-color: #38bdf8; }
+  button { background: #38bdf8; color: #0f172a; border: 0; border-radius: 6px;
+           padding: 10px 24px; font-size: 13px; font-weight: 700; cursor: pointer; }
+  #status { display: none; color: #34d399; font-size: 12px; margin-top: 12px; }
+  .hint { font-size: 11px; color: #475569; margin-top: -12px; margin-bottom: 16px; }
 </style>
 </head>
 <body>
-<h1>🧩 T4H Widget Dock</h1>
-<div class="sub">Connect your T4H account to load widgets</div>
-<label for="api_key">Supabase Anon Key</label>
-<input type="text" id="api_key" placeholder="eyJhbGci…">
-<label for="supabase_url">Supabase URL (optional)</label>
-<input type="text" id="supabase_url" placeholder="https://lzfgigiyqpuuxslsygjt.supabase.co">
-<button class="save-btn" id="save">Save & Sync</button>
-<div class="status" id="status" style="display:none">✓ Saved</div>
+<h2>⚡ Snaps by T4H — Settings</h2>
+<label>Supabase API Key (anon key)</label>
+<input type="password" id="api_key" placeholder="eyJ..." />
+<p class="hint">Found in your T4H account → API keys</p>
+<label>Supabase URL (optional override)</label>
+<input type="text" id="supabase_url" placeholder="https://lzfgigiyqpuuxslsygjt.supabase.co" />
+<label>Ingest API Key (optional override)</label>
+<input type="password" id="ingest_api_key" placeholder="ik_..." />
+<p class="hint">Used to send snaps. Defaults to T4H shared key if blank.</p>
+<button id="save">Save settings</button>
+<div id="status">Settings saved ✓</div>
 <script src="options.js"></script>
 </body>
 </html>
