@@ -1,32 +1,47 @@
 {
   "manifest_version": 3,
-  "name": "T4H Widget Dock",
-  "version": "0.1.0",
-  "description": "Load purchased Tech 4 Humanity widgets in a browser side panel. Pipeline health, finance, ops, and AI tools in 10 seconds.",
+  "name": "Snaps by T4H",
+  "version": "1.0.0",
+  "description": "Capture tabs instantly. Get T4H intelligence, widgets, and tools in your side panel.",
   "permissions": [
     "storage",
     "sidePanel",
     "activeTab",
+    "tabs",
+    "contextMenus",
+    "scripting",
     "notifications"
   ],
   "host_permissions": [
-    "https://*.vercel.app/*",
-    "https://*.supabase.co/*",
-    "https://*.tech4humanity.com.au/*",
-    "https://*.holo-org.com/*",
-    "https://*.augmentedhumanity.coach/*"
+    "<all_urls>"
   ],
   "background": {
     "service_worker": "service-worker.js",
     "type": "module"
   },
   "action": {
-    "default_title": "T4H Widget Dock",
+    "default_title": "Snap this tab",
     "default_popup": "popup.html"
   },
   "options_page": "options.html",
   "side_panel": {
     "default_path": "sidepanel.html"
+  },
+  "commands": {
+    "quick-snap": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Snap current tab"
+    },
+    "dump-window": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+D",
+        "mac": "Command+Shift+D"
+      },
+      "description": "Dump all tabs in window"
+    }
   },
   "icons": {
     "16": "icons/icon16.png",
