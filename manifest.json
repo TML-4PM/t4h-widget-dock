@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Snaps by T4H",
-  "version": "1.0.0",
-  "description": "Capture tabs instantly. Get T4H intelligence, widgets, and tools in your side panel.",
+  "version": "1.1.0",
+  "description": "Capture tabs instantly. Detect and record consent events to your ConsentX wallet. T4H intelligence in your browser.",
   "permissions": [
     "storage",
     "sidePanel",
@@ -27,6 +27,14 @@
   "side_panel": {
     "default_path": "sidepanel.html"
   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["consent-scanner.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
   "commands": {
     "quick-snap": {
       "suggested_key": {
@@ -41,6 +49,13 @@
         "mac": "Command+Shift+D"
       },
       "description": "Dump all tabs in window"
+    },
+    "scan-consent": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+C",
+        "mac": "Command+Shift+C"
+      },
+      "description": "Scan page for consent events"
     }
   },
   "icons": {
