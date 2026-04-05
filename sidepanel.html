@@ -58,6 +58,7 @@
 </div>
 <div class="tabs">
   <div class="tab active" data-tab="snaps">Snaps</div>
+  <div class="tab" data-tab="consent">Consent</div>
   <div class="tab" data-tab="widgets">Widgets</div>
   <div class="tab" data-tab="revenue">Revenue</div>
 </div>
@@ -67,6 +68,20 @@
 </div>
 <div class="pane" id="pane-widgets">
   <div id="widget-grid"><div class="loading">Loading widgets…</div></div>
+</div>
+<div class="pane" id="pane-consent">
+  <div style="padding:4px 0 10px;display:flex;align-items:center;justify-content:space-between">
+    <span style="font-size:11px;font-weight:700;color:#e2e8f0">Detected Events</span>
+    <span id="sp-cx-count" style="font-size:9px;background:rgba(155,66,24,.25);color:#f87171;padding:2px 7px;border-radius:8px;font-weight:700">0</span>
+  </div>
+  <button onclick="spScanConsent()" style="width:100%;padding:7px;background:rgba(21,107,111,.2);border:1px solid rgba(21,107,111,.4);color:#2dd4bf;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">🔍 Scan Current Page</button>
+  <button id="sp-capture-all" onclick="spCaptureAll()" style="display:none;width:100%;padding:8px;background:#9b4218;color:#fff;border:none;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;margin-bottom:8px">Capture All to Wallet →</button>
+  <div id="sp-cx-events"><div class="empty">Click Scan to detect consent events on the active page.</div></div>
+  <div style="margin-top:12px;border-top:1px solid #1e293b;padding-top:10px">
+    <div style="font-size:9px;color:#475569;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px">Recent wallet records</div>
+    <div id="sp-wallet-recs"><div class="loading">Loading…</div></div>
+    <a href="https://consentx.org/wallet.html" target="_blank" style="display:block;text-align:center;margin-top:8px;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#156b6f;text-decoration:none">Open full wallet →</a>
+  </div>
 </div>
 <div class="pane" id="pane-revenue">
   <div id="revenue-content"><div class="loading">Loading pipeline…</div></div>
