@@ -126,3 +126,76 @@ async function init() {
 }
 
 init();
+
+
+// ── ConsentX Sidepanel Functions ────────────────────────────────────
+const BRIDGE_URL = 'https://m5oqj21chd.execute-api.ap-southeast-2.amazonaws.com/lambda/invoke';
+const BRIDGE_KEY = 'bk_tOH8P5WD3mxBKfICa4yI56vJhpuYOynfdf1d_GfvdK4';
+let spDetected = [];
+
+async function spBridge(sql) {
+  try {
+    const r = await fetch(BRIDGE_URL, { method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':BRIDGE_KEY},
+      body: JSON.stringify({fn:'troy-sql-executor',route:'sql',sql}) });
+    return (await r.json()).rows || [];
+  } catch { return []; }
+}
+
+window.spScanConsent = async function() {
+  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tabs[0]) return;
+  document.getElementById('sp-cx-events').innerHTML = '<div class="loading">Scanning…</div>';
+  try {
+    const resp = await chrome.tabs.sendMessage(tabs[0].id, { type: 'CX_SCAN_NOW' });
+    spDetected = resp?.detected || [];
+    document.getElementById('sp-cx-count').textContent = spDetected.length;
+    document.getElementById('sp-capture-all').style.display = spDetected.length > 0 ? 'block' : 'none';
+    spRenderEvents();
+  } catch {
+    document.getElementById('sp-cx-events').innerHTML = '<div class="empty">Could not scan — reload the page first.</div>';
+  }
+};
+
+window.spCaptureAll = async function() {
+  const store = await chrome.storage.local.get(['cx_wallet_handle']);
+  if (!store.cx_wallet_handle) { alert('Set your wallet handle in the popup first.'); return; }
+  const btn = document.getElementById('sp-capture-all');
+  btn.textContent = 'Capturing…'; btn.disabled = true;
+  const resp = await chrome.runtime.sendMessage({ type: 'CX_CAPTURE_ALL', wallet_handle: store.cx_wallet_handle });
+  btn.textContent = `✓ ${resp?.captured || 0} captured`;
+  spDetected = []; spRenderEvents();
+  setTimeout(() => { btn.textContent = 'Capture All to Wallet →'; btn.disabled = false; btn.style.display='none'; spLoadWalletRecs(store.cx_wallet_handle); }, 2000);
+};
+
+function spRenderEvents() {
+  const el = document.getElementById('sp-cx-events');
+  if (!spDetected.length) { el.innerHTML = '<div class="empty">No consent events found.</div>'; return; }
+  el.innerHTML = spDetected.map(e => `<div class="snap-item" style="border-left-color:${e.sensitivity==='high'?'#ef4444':e.sensitivity==='low'?'#34d399':'#f59e0b'}">
+    <div class="snap-title">${e.consent_label||e.domain}</div>
+    <div class="snap-meta"><span class="snap-biz">${e.sector||'platform'}</span> · ${e.sensitivity||'medium'} · ${e.domain}</div>
+  </div>`).join('');
+}
+
+async function spLoadWalletRecs(handle) {
+  const recs = await spBridge(`SELECT cc.consent_label,cc.domain,cc.sensitivity,cc.captured_at FROM public.v_consent_capture_feed cc JOIN public.consent_wallet cw ON cw.wallet_handle='${handle}' AND cw.id=cc.wallet_id ORDER BY cc.captured_at DESC LIMIT 6`);
+  const el = document.getElementById('sp-wallet-recs');
+  if (!recs.length) { el.innerHTML = '<div class="empty" style="font-size:10px">No records yet.</div>'; return; }
+  el.innerHTML = recs.map(r => `<div class="snap-item ${r.sensitivity==='high'?'pretend':r.sensitivity==='low'?'real':'partial'}">
+    <div class="snap-title" style="font-size:11px">${r.consent_label||r.domain}</div>
+    <div class="snap-meta">${r.domain} · ${new Date(r.captured_at).toLocaleDateString('en-AU')}</div>
+  </div>`).join('');
+}
+
+// Load wallet recs on consent tab activation
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    if (t.dataset.tab === 'consent') {
+      chrome.storage.local.get(['cx_wallet_handle','cx_pending_count'], store => {
+        if (store.cx_wallet_handle) spLoadWalletRecs(store.cx_wallet_handle);
+        const n = store.cx_pending_count||0;
+        document.getElementById('sp-cx-count').textContent = n;
+      });
+    }
+  });
+});
