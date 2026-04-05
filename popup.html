@@ -5,42 +5,360 @@
 <title>Snaps by T4H</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { width: 300px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  body { width: 320px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
          background: #0f172a; color: #e2e8f0; }
-  .header { padding: 14px 16px 10px; border-bottom: 1px solid #1e293b; }
+
+  /* HEADER */
+  .header { padding: 12px 14px 10px; border-bottom: 1px solid #1e293b;
+            display: flex; align-items: center; justify-content: space-between; }
   .logo { font-size: 13px; font-weight: 700; letter-spacing: .04em; color: #38bdf8; }
-  .note-wrap { padding: 12px 16px 8px; }
-  textarea { width: 100%; background: #1e293b; border: 1px solid #334155;
-             color: #e2e8f0; border-radius: 6px; padding: 8px 10px;
-             font-size: 12px; resize: none; outline: none; }
-  textarea::placeholder { color: #64748b; }
-  .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px 10px; }
-  .btn { padding: 9px 0; border: 0; border-radius: 6px; font-size: 12px;
-         font-weight: 600; cursor: pointer; transition: opacity .15s; }
-  .btn:hover { opacity: .85; }
-  .btn-snap { background: #38bdf8; color: #0f172a; }
-  .btn-dump { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
-  .btn-panel { width: calc(100% - 32px); margin: 0 16px 6px; background: #1e293b;
-               color: #94a3b8; border: 1px solid #334155; }
-  .status { margin: 0 16px 12px; padding: 7px 10px; background: #1e293b;
-            border-radius: 6px; font-size: 11px; color: #64748b; min-height: 28px; }
-  .status.ok { color: #34d399; }
-  .status.err { color: #f87171; }
-  .kbd { font-size: 10px; color: #475569; padding: 6px 16px 10px; }
+  .logo-cx { font-size: 10px; font-weight: 500; color: #156b6f; margin-left: 6px;
+             background: rgba(21,107,111,.2); padding: 1px 6px; border-radius: 3px; }
+
+  /* TABS */
+  .tabs { display: flex; border-bottom: 1px solid #1e293b; }
+  .tab { flex: 1; padding: 7px 0; font-size: 10px; font-weight: 600; text-align: center;
+         color: #475569; cursor: pointer; border-bottom: 2px solid transparent; letter-spacing: .04em; text-transform: uppercase; }
+  .tab.active { color: #38bdf8; border-bottom-color: #38bdf8; }
+  .pane { display: none; padding: 12px 14px; max-height: 440px; overflow-y: auto; }
+  .pane.active { display: block; }
+
+  /* SNAP PANE */
+  .note-wrap { margin-bottom: 8px; }
+  textarea { width: 100%; background: #1e293b; border: 1px solid #334155; color: #e2e8f0;
+             border-radius: 6px; padding: 8px 10px; font-size: 11px; resize: none;
+             font-family: inherit; outline: none; }
+  textarea::placeholder { color: #475569; }
+  .status { font-size: 10px; padding: 5px 0; min-height: 16px; color: #94a3b8; }
+  .status.ok { color: #34d399; } .status.err { color: #f87171; }
+  .btn-row { display: flex; gap: 6px; margin-top: 6px; }
+  .btn { flex: 1; padding: 7px; border: none; border-radius: 6px; font-size: 11px;
+         font-weight: 600; cursor: pointer; letter-spacing: .03em; }
+  .btn-snap { background: #0369a1; color: #fff; }
+  .btn-snap:hover { background: #0284c7; }
+  .btn-panel { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+  .btn-panel:hover { color: #e2e8f0; }
+
+  /* CONSENT PANE */
+  .cx-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .cx-title { font-size: 11px; font-weight: 700; color: #e2e8f0; }
+  .cx-count { font-size: 10px; background: rgba(155,66,24,.25); color: #f87171;
+              padding: 2px 7px; border-radius: 10px; font-weight: 700; }
+  .cx-count.zero { background: rgba(52,211,153,.12); color: #34d399; }
+
+  .cx-scan-btn { width: 100%; padding: 8px; background: rgba(21,107,111,.2);
+                 border: 1px solid rgba(21,107,111,.4); color: #2dd4bf; border-radius: 6px;
+                 font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+                 cursor: pointer; margin-bottom: 10px; }
+  .cx-scan-btn:hover { background: rgba(21,107,111,.35); }
+
+  .event-card { background: #1e293b; border-radius: 6px; padding: 9px 11px; margin-bottom: 7px;
+                border-left: 3px solid #334155; position: relative; }
+  .event-card.high   { border-left-color: #ef4444; }
+  .event-card.medium { border-left-color: #f59e0b; }
+  .event-card.low    { border-left-color: #34d399; }
+  .ev-label { font-size: 11px; font-weight: 600; color: #e2e8f0; margin-bottom: 2px;
+              padding-right: 60px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ev-domain { font-size: 9px; color: #64748b; }
+  .ev-badges { position: absolute; top: 9px; right: 9px; display: flex; gap: 3px; }
+  .badge { font-size: 8px; padding: 1px 5px; border-radius: 2px; font-weight: 700; text-transform: uppercase; }
+  .b-h { background: rgba(239,68,68,.2); color: #f87171; }
+  .b-m { background: rgba(245,158,11,.2); color: #fbbf24; }
+  .b-l { background: rgba(52,211,153,.2); color: #34d399; }
+  .b-s { background: rgba(56,189,248,.15); color: #38bdf8; font-size: 7px; }
+
+  .capture-btn { width: 100%; margin-top: 8px; padding: 6px; background: rgba(155,66,24,.25);
+                 border: 1px solid rgba(155,66,24,.4); color: #fb923c; border-radius: 5px;
+                 font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+                 cursor: pointer; }
+  .capture-btn:hover { background: rgba(155,66,24,.4); }
+  .capture-all-btn { width: 100%; padding: 9px; background: #9b4218; color: #fff; border: none;
+                     border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: .06em;
+                     text-transform: uppercase; cursor: pointer; margin-bottom: 8px; }
+  .capture-all-btn:hover { background: #7c3614; }
+  .capture-all-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* WALLET PANE */
+  .wallet-setup { text-align: center; padding: 20px 10px; }
+  .ws-icon { font-size: 2rem; margin-bottom: 8px; }
+  .ws-title { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+  .ws-body { font-size: 10px; color: #64748b; line-height: 1.5; margin-bottom: 12px; }
+  .wallet-input { width: 100%; background: #1e293b; border: 1px solid #334155; color: #e2e8f0;
+                  border-radius: 6px; padding: 7px 9px; font-size: 11px; font-family:'DM Mono',monospace;
+                  outline: none; margin-bottom: 6px; }
+  .wallet-input:focus { border-color: #156b6f; }
+  .wallet-btn { width: 100%; padding: 8px; background: #156b6f; color: #fff; border: none;
+                border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: .06em;
+                text-transform: uppercase; cursor: pointer; }
+  .wallet-btn:hover { background: #0f5259; }
+
+  .wallet-connected { }
+  .wc-handle { font-family: 'DM Mono',monospace; font-size: 10px; color: #2dd4bf;
+               background: rgba(21,107,111,.2); padding: 4px 8px; border-radius: 4px; margin-bottom: 10px; }
+  .wc-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+  .wcs { background: #1e293b; border-radius: 6px; padding: 7px; text-align: center; }
+  .wcs-n { font-size: 18px; font-weight: 700; color: #38bdf8; line-height: 1; }
+  .wcs-l { font-size: 8px; color: #475569; margin-top: 2px; }
+  .wcs-n.red { color: #f87171; } .wcs-n.grn { color: #34d399; }
+
+  .rec-item { background: #1e293b; border-radius: 6px; padding: 8px 10px; margin-bottom: 6px;
+              border-left: 3px solid #334155; }
+  .rec-item.high { border-left-color: #ef4444; } .rec-item.medium { border-left-color: #f59e0b; }
+  .ri-label { font-size: 11px; font-weight: 600; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ri-meta { font-size: 9px; color: #64748b; margin-top: 2px; }
+
+  .wallet-link { display: block; text-align: center; margin-top: 10px; font-size: 9px;
+                 letter-spacing: .08em; text-transform: uppercase; color: #475569; text-decoration: none; }
+  .wallet-link:hover { color: #94a3b8; }
+  .disconnect { font-size: 9px; color: #475569; background: none; border: none; cursor: pointer;
+                text-decoration: underline; display: block; margin: 6px auto 0; }
+
+  .empty { color: #475569; font-size: 11px; text-align: center; padding: 20px 0; }
+  .loading { color: #475569; font-size: 10px; padding: 6px 0; text-align: center; }
+  .divider { border: none; border-top: 1px solid #1e293b; margin: 8px 0; }
 </style>
 </head>
 <body>
-<div class="header"><span class="logo">⚡ Snaps by T4H</span></div>
-<div class="note-wrap">
-  <textarea id="note" rows="3" placeholder="Add a note (optional)…"></textarea>
+<div class="header">
+  <span class="logo">⚡ Snaps by T4H <span class="logo-cx">ConsentX</span></span>
 </div>
-<div class="btns">
-  <button class="btn btn-snap" id="snap">Snap tab</button>
-  <button class="btn btn-dump" id="dump">Dump window</button>
+
+<div class="tabs">
+  <div class="tab active" data-pane="snap">Snap</div>
+  <div class="tab" data-pane="consent">Consent <span id="tab-badge" style="display:none;background:#9b4218;color:#fff;font-size:8px;padding:1px 5px;border-radius:8px;margin-left:3px"></span></div>
+  <div class="tab" data-pane="wallet">Wallet</div>
 </div>
-<button class="btn btn-panel" id="panel">Open widget panel →</button>
-<div class="status" id="status">Ready</div>
-<div class="kbd">⌘⇧S snap · ⌘⇧D dump window</div>
-<script src="popup.js" type="module"></script>
+
+<!-- SNAP -->
+<div class="pane active" id="pane-snap">
+  <div class="note-wrap">
+    <textarea id="note" rows="2" placeholder="Add a note (optional)…"></textarea>
+  </div>
+  <div class="status" id="status"></div>
+  <div class="btn-row">
+    <button class="btn btn-snap" id="snap">⚡ Snap Tab</button>
+    <button class="btn btn-panel" id="open-panel">Open Panel</button>
+  </div>
+</div>
+
+<!-- CONSENT -->
+<div class="pane" id="pane-consent">
+  <div class="cx-header">
+    <div class="cx-title">Detected on this page</div>
+    <div class="cx-count zero" id="cx-count">0</div>
+  </div>
+  <button class="cx-scan-btn" id="cx-scan">🔍 Scan Page Now</button>
+  <button class="capture-all-btn" id="cx-capture-all" style="display:none">Capture All to Wallet →</button>
+  <div id="cx-events"><div class="empty">Scanning…</div></div>
+</div>
+
+<!-- WALLET -->
+<div class="pane" id="pane-wallet">
+  <div id="wallet-setup" class="wallet-setup">
+    <div class="ws-icon">👛</div>
+    <div class="ws-title">Connect your wallet</div>
+    <p class="ws-body">Enter your ConsentX wallet handle to see your captured consent records and stats.</p>
+    <input class="wallet-input" id="wallet-handle-input" type="text" placeholder="e.g. troy-latter" autocomplete="off">
+    <button class="wallet-btn" id="wallet-connect">Connect →</button>
+  </div>
+  <div id="wallet-connected" style="display:none">
+    <div class="wc-handle" id="wc-handle-display"></div>
+    <div class="wc-stats">
+      <div class="wcs"><div class="wcs-n" id="w-total">—</div><div class="wcs-l">Total</div></div>
+      <div class="wcs"><div class="wcs-n red" id="w-high">—</div><div class="wcs-l">High Risk</div></div>
+      <div class="wcs"><div class="wcs-n grn" id="w-vcs">—</div><div class="wcs-l">VCs</div></div>
+    </div>
+    <hr class="divider">
+    <div style="font-size:9px;color:#475569;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px">Recent records</div>
+    <div id="w-records"><div class="loading">Loading…</div></div>
+    <a href="https://consentx.org/wallet.html" target="_blank" class="wallet-link">Open full wallet →</a>
+    <button class="disconnect" id="w-disconnect">Disconnect</button>
+  </div>
+</div>
+
+<script>
+const BRIDGE = 'https://m5oqj21chd.execute-api.ap-southeast-2.amazonaws.com/lambda/invoke';
+const BRIDGE_KEY = 'bk_tOH8P5WD3mxBKfICa4yI56vJhpuYOynfdf1d_GfvdK4';
+
+// ── TABS ─────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('pane-' + t.dataset.pane).classList.add('active');
+    if (t.dataset.pane === 'consent') initConsent();
+    if (t.dataset.pane === 'wallet') initWallet();
+  });
+});
+
+// ── SNAP ─────────────────────────────────────────────────────────────
+const statusEl = document.getElementById('status');
+document.getElementById('snap').addEventListener('click', async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  statusEl.textContent = 'Snapping…'; statusEl.className = 'status';
+  const resp = await chrome.runtime.sendMessage({ action: 'snap', payload: {
+    url: tab.url, title: tab.title, note: document.getElementById('note').value.trim(),
+    mode: 'capture_classify', tabId: tab.id, favicon: tab.favIconUrl
+  }});
+  statusEl.textContent = resp?.success ? '✓ Snapped' : '✗ ' + (resp?.error || 'Error');
+  statusEl.className = 'status ' + (resp?.success ? 'ok' : 'err');
+});
+document.getElementById('open-panel').addEventListener('click', () => {
+  chrome.runtime.sendMessage({ action: 'open-panel' });
+  window.close();
+});
+
+// ── CONSENT ──────────────────────────────────────────────────────────
+let detectedEvents = [];
+
+async function initConsent() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  // Load from storage first (already detected)
+  const store = await chrome.storage.local.get(['cx_last_detected','cx_pending_count']);
+  const pending = store.cx_pending_count || 0;
+  const badge = document.getElementById('tab-badge');
+  badge.textContent = pending;
+  badge.style.display = pending > 0 ? 'inline' : 'none';
+
+  // Try to get from content script
+  try {
+    const resp = await chrome.tabs.sendMessage(tab.id, { type: 'CX_GET_DETECTED' });
+    detectedEvents = resp?.detected || [];
+  } catch {
+    detectedEvents = store.cx_last_detected || [];
+  }
+  renderEvents();
+}
+
+document.getElementById('cx-scan').addEventListener('click', async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  document.getElementById('cx-events').innerHTML = '<div class="loading">Scanning…</div>';
+  try {
+    const resp = await chrome.tabs.sendMessage(tab.id, { type: 'CX_SCAN_NOW' });
+    detectedEvents = resp?.detected || [];
+    const pending = detectedEvents.length;
+    const badge = document.getElementById('tab-badge');
+    badge.textContent = pending; badge.style.display = pending > 0 ? 'inline' : 'none';
+    document.getElementById('cx-count').textContent = pending;
+    document.getElementById('cx-count').className = 'cx-count' + (pending === 0 ? ' zero' : '');
+    renderEvents();
+  } catch {
+    document.getElementById('cx-events').innerHTML = '<div class="empty">Could not scan — try refreshing the page.</div>';
+  }
+});
+
+document.getElementById('cx-capture-all').addEventListener('click', async () => {
+  const btn = document.getElementById('cx-capture-all');
+  const store = await chrome.storage.local.get(['cx_wallet_handle']);
+  if (!store.cx_wallet_handle) {
+    alert('Connect your wallet first — click the Wallet tab.');
+    return;
+  }
+  btn.textContent = 'Capturing…'; btn.disabled = true;
+  const resp = await chrome.runtime.sendMessage({ type: 'CX_CAPTURE_ALL', wallet_handle: store.cx_wallet_handle });
+  btn.textContent = `✓ Captured ${resp?.captured || 0} to wallet`;
+  setTimeout(() => { btn.textContent = 'Capture All to Wallet →'; btn.disabled = false; detectedEvents = []; renderEvents(); }, 2000);
+});
+
+function renderEvents() {
+  const el = document.getElementById('cx-events');
+  const countEl = document.getElementById('cx-count');
+  const captureBtn = document.getElementById('cx-capture-all');
+  countEl.textContent = detectedEvents.length;
+  countEl.className = 'cx-count' + (detectedEvents.length === 0 ? ' zero' : '');
+  captureBtn.style.display = detectedEvents.length > 0 ? 'block' : 'none';
+  if (!detectedEvents.length) {
+    el.innerHTML = '<div class="empty">No consent events detected on this page.</div>';
+    return;
+  }
+  el.innerHTML = detectedEvents.map((e, i) => `
+    <div class="event-card ${e.sensitivity || 'medium'}">
+      <div class="ev-label">${e.consent_label || e.domain}</div>
+      <div class="ev-domain">${e.domain}</div>
+      <div class="ev-badges">
+        <span class="badge b-${(e.sensitivity||'m')[0]}">${e.sensitivity || 'medium'}</span>
+        <span class="badge b-s">${e.sector || 'platform'}</span>
+      </div>
+      <button class="capture-btn" data-idx="${i}" onclick="captureOne(${i})">Capture to Wallet</button>
+    </div>`).join('');
+}
+
+async function captureOne(idx) {
+  const e = detectedEvents[idx];
+  const store = await chrome.storage.local.get(['cx_wallet_handle']);
+  if (!store.cx_wallet_handle) { alert('Connect your wallet first.'); return; }
+  const btn = document.querySelector(`[data-idx="${idx}"]`);
+  btn.textContent = 'Capturing…'; btn.disabled = true;
+  const resp = await chrome.runtime.sendMessage({ type: 'CX_CAPTURE_EVENT', event: e, wallet_handle: store.cx_wallet_handle });
+  btn.textContent = resp?.ok ? '✓ Captured' : '✗ Failed';
+  setTimeout(() => { detectedEvents.splice(idx, 1); renderEvents(); }, 1500);
+}
+
+// ── WALLET ───────────────────────────────────────────────────────────
+async function bridgeQuery(sql) {
+  try {
+    const r = await fetch(BRIDGE, { method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':BRIDGE_KEY},
+      body: JSON.stringify({fn:'troy-sql-executor',route:'sql',sql})
+    });
+    return (await r.json()).rows || [];
+  } catch { return []; }
+}
+
+async function initWallet() {
+  const store = await chrome.storage.local.get(['cx_wallet_handle']);
+  if (store.cx_wallet_handle) {
+    document.getElementById('wallet-setup').style.display = 'none';
+    document.getElementById('wallet-connected').style.display = 'block';
+    document.getElementById('wc-handle-display').textContent = '👛 ' + store.cx_wallet_handle;
+    loadWalletData(store.cx_wallet_handle);
+  }
+}
+
+async function loadWalletData(handle) {
+  const summary = await bridgeQuery(`SELECT active_captures, high_risk_active, active_vcs FROM public.v_consent_wallet_summary WHERE wallet_handle = '${handle}'`);
+  if (summary[0]) {
+    const s = summary[0];
+    document.getElementById('w-total').textContent = s.active_captures || 0;
+    document.getElementById('w-high').textContent = s.high_risk_active || 0;
+    document.getElementById('w-vcs').textContent = s.active_vcs || 0;
+  }
+  const records = await bridgeQuery(`SELECT cc.consent_label, cc.domain, cc.sensitivity, cc.sector, cc.captured_at FROM public.v_consent_capture_feed cc JOIN public.consent_wallet cw ON cw.wallet_handle = '${handle}' AND cw.id = cc.wallet_id ORDER BY cc.captured_at DESC LIMIT 5`);
+  const el = document.getElementById('w-records');
+  if (!records.length) { el.innerHTML = '<div class="empty">No records yet.</div>'; return; }
+  el.innerHTML = records.map(r => `<div class="rec-item ${r.sensitivity||'medium'}">
+    <div class="ri-label">${r.consent_label || r.domain}</div>
+    <div class="ri-meta">${r.domain} · ${r.sector||'platform'} · ${new Date(r.captured_at).toLocaleDateString('en-AU')}</div>
+  </div>`).join('');
+}
+
+document.getElementById('wallet-connect').addEventListener('click', async () => {
+  const h = document.getElementById('wallet-handle-input').value.trim().toLowerCase().replace(/[^a-z0-9\-]/g,'');
+  if (!h) return;
+  await chrome.storage.local.set({ cx_wallet_handle: h });
+  chrome.runtime.sendMessage({ type: 'CX_SET_WALLET', wallet_handle: h });
+  document.getElementById('wallet-setup').style.display = 'none';
+  document.getElementById('wallet-connected').style.display = 'block';
+  document.getElementById('wc-handle-display').textContent = '👛 ' + h;
+  loadWalletData(h);
+});
+
+document.getElementById('w-disconnect').addEventListener('click', async () => {
+  await chrome.storage.local.remove(['cx_wallet_handle']);
+  document.getElementById('wallet-connected').style.display = 'none';
+  document.getElementById('wallet-setup').style.display = 'block';
+  document.getElementById('wallet-handle-input').value = '';
+});
+
+// Init: check for pending consent count
+chrome.storage.local.get(['cx_pending_count','cx_wallet_handle'], store => {
+  const n = store.cx_pending_count || 0;
+  if (n > 0) {
+    const b = document.getElementById('tab-badge');
+    b.textContent = n; b.style.display = 'inline';
+  }
+});
+</script>
 </body>
 </html>
